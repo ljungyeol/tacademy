@@ -15,7 +15,8 @@ public class MyApp3 {
 	int lcdw, lcdh;
 	Paint p = new Paint();
 	boolean bInit,going;
-	
+
+
 	public MyApp3(Context ctx){
 		this.ctx = ctx;
 	}
@@ -50,22 +51,27 @@ public class MyApp3 {
 			chr[3][i]=BitmapFactory.decodeResource(ctx.getResources(),j);
 		x = lcdw/2 -cW/2;
 		y = lcdh/2 -cH;
+		mov = new Move(lcdw,lcdh);			
+		mov.x = lcdw/2; 
+		mov.y = lcdh/2;	
 		going = true;
 		bInit = true;
 	}
 	static final int cW= 64, cH=96, chrF=8;
-	int x, y, spdx=2, spdy=2, dir,cut;
-
+	int x, y;
+	int dir, spd=2;
 	
 	Bitmap[][] chr = new Bitmap[4][chrF];
-	MyTimer myt = new MyTimer(30);
-	
+	MyTimer myt = new MyTimer(40);
+	Move mov;
 	void main(Canvas c){
 		long now = System.currentTimeMillis();
 		
-		if(going){
+		if(mov.going){
 			myt.run(now);
-			if(dir<2) x+=spdx;
+			mov.MoveCheck(spd);
+		}
+		/*	if(dir<2) x+=spdx;
 			else y+= spdy;
 			if (x<0 || x>lcdw-cW){
 				dir=(x<0)? 0:1;
@@ -80,15 +86,30 @@ public class MyApp3 {
 		}
 		c.drawColor(Color.BLACK);
 		c.drawBitmap(chr[dir][myt.num],x,y,null);
-		c.drawText("Character Animation", 20, 30, p);
+		c.drawText("Character Animation", 20, 30, p);*/
+		c.drawColor(Color.WHITE); 
+		c.drawBitmap(chr[dir][myt.num],mov.x-cW/2,mov.y-cH,null);
+			
+		c.drawPoint(mov.x, mov.y, p);
+		c.drawPoint(mov.ex, mov.ey, p);		
+		c.drawText("Character Animation", 10,20, p);	
+		
+		
 	}
 	int tchs;
 	float dnx,dny,mvx,mvy,tx,ty;
 	
 	void event(int state, float x , float y){
-		myt.start = System.currentTimeMillis();
-		going = true;
+		//myt.start = System.currentTimeMillis();
+		//going = true;
+		mov.MoveInit((int)x,(int)y);
 		
+		if(mov.direction==0 || mov.direction==4) dir=0;
+		else if(mov.direction==2 || mov.direction==6) dir=1;
+		else if(mov.direction==3 || mov.direction==5) dir=2;
+		else if(mov.direction==1 || mov.direction==7) dir=3;
+		
+		/*
 		if(x<lcdw/3){
 			dir =1;
 			spdx=(spdx>0)?-spdx:spdx;
@@ -107,7 +128,13 @@ public class MyApp3 {
 		}
 		else{
 			going = false;
-		}
+		}*/
+		
+		
+		
+		
+		
+		
 	}
 	
 	void event(int state, int key){
